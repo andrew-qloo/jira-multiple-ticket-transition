@@ -8,7 +8,7 @@ class App {
     if (!this.targetStatus) {
       throw new Error("Missing target status input");
     }
-    
+
     this.jira = new Jira();
     this.github = new Github();
   }
@@ -45,7 +45,11 @@ class App {
     for (let i = 0; i < issueList.length; i++) {
       const issueKey = issueList[i];
       const transitionId = transitionsIds[i];
-      await this.jira.transitionIssue(issueKey, transitionId);
+      try {
+        await this.jira.transitionIssue(issueKey, transitionId);
+      } catch (error) {
+        console.log(`Failed to transition issue ${issueKey}: ${error.message}`);
+      }
     }
   }
 }
