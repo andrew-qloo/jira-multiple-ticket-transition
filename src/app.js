@@ -22,19 +22,25 @@ class App {
 
     console.log(`Found issue keys: ${issueList.join(", ")}`);
     const transitionIds = await this.getTransitionIds(issueList);
-    await this.transitionIssues(issueList, transitionIds);
+    const filteredTransitionIds = transitionIds.filter(Boolean);
+    await this.transitionIssues(issueList, filteredTransitionIds);
   }
 
   async getTransitionIds(issues) {
     const transitionIds = await Promise.all(
       issues.map(async (issue) => {
-        const { transitions } = await this.jira.getIssueTransitions(issue);
-        const targetTransition = transitions.find(({ name }) => name === this.targetStatus);
-        if (!targetTransition) {
-          console.log(`Cannot find transition to status "${this.targetStatus}"`);
+        try {
+          const { transitions } = await this.jira.getIssueTransitions(issue);
+          const targetTransition = transitions.find(({ name }) => name === this.targetStatus);
+          if (!targetTransition) {
+            console.log(`Cannot find transition to status "${this.targetStatus}"`);
+            return null;
+          }
+          return targetTransition.id;
+        } catch (error) {
+          console.log(`Failed to get transitions for issue ${issue}: ${error.message}`);
           return null;
         }
-        return targetTransition.id;
       })
     );
 
