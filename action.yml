@@ -1,4 +1,4 @@
-name: JIRA tickets transition for PR and Releases
+name: Transition Jira Tickets (if found) for PRs
 description: Move JIRA tickets found in PR commits or release diff
 branding:
   icon: move
